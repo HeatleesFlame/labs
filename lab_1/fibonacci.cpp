@@ -10,6 +10,7 @@ int main (void)
     int fib_new;
     int i = 2;
     int max;
+    cin >> max;
     while (sum <= max) 
     {
         fib_new = fib_1 + fib_2;
