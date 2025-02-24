@@ -5,18 +5,17 @@ using namespace std;
 
 int main (void)
 {
-     float x;
-     float y;
-     float step;
+     double x;
+     double y;
+     double step;
      cout << "Enter x" << endl;
      cin >> x;
      step = (4 - x)/9;
      for (x; x<=4; x = x + step) {
         y = sin(x)/x;
-        cout << "x = " << x << endl;
-        cout << "y = " << y << endl;
-        cout << endl;
+        cout << "x = " << x << " y= " << y << endl;
      }
+     cout << "step= " << step << endl;
     return 0;
 
 }
