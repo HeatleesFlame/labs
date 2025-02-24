@@ -25,7 +25,7 @@ void first(int arr[], int n)
     for (int i = 0; i < n; i++){
         arr[i] = i*i;
     }
-    for (int i = 0; i < n; i++){
+    for (int i = 0; i < n; i+= 2){
         cout << arr[i] << endl;
     }
     cout << endl;

@@ -26,6 +26,7 @@ int main(void)
     {   
         cout << cursor -> data << endl;
         cursor = cursor -> next;
+        cursor = cursor -> next;
     }
 
     return 0;
