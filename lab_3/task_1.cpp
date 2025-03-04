@@ -5,8 +5,8 @@ using namespace std;
 
 int main(void)
 {
-    char s1 [10] = "tiger";
-    char s2 [10] = "jaguar";
+    char s1 [10] = "tier";
+    char s2 [10] = "jauar";
     char s3 [10];
     // string contacenation
     cout << strcat(s1, s2);
