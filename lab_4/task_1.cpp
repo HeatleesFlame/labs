@@ -1,39 +1,53 @@
 #include <iostream>
+#include <random>
 
 using namespace std;
 
-int* compress(int* arr, int n);
-int* decompress(int* arr, int n);
+void compress(int* arr, int* new_parts, int n, int left, int right);
+int* decompress(int* parts, int* arr, int n, int left, int right);
 int search(int* arr, int target, int n);
+
 int main(void)
 {
-    int n;
-    cin >> n;
-    int* nums = new int[n]{};
-    int index = 0;
-    //array generation
-    for(int i = 0; i <= 17; i++)
+    cout << "enter left" << endl; 
+    int left;
+    cin >> left;
+    cout << "enter right" << endl;
+    int right;
+    cin >> right;
+
+    int * parts = new int [right-left+1] {};
+    int n = {};
+    for (int i = left; i <= right; i++)
     {
-        cout << "enter amount of number: " << i << endl;        
-        int j = 0;
-        cin >> j;
-        for (int k = 0; k < j; k++)
+        //random length generator
+        random_device r;
+        minstd_rand0 e1(r());
+        uniform_int_distribution<int> uniform_dist(1, 6);
+        parts[i-left] = uniform_dist(e1);
+        n += parts[i-left];
+    }
+
+    //function calls
+    int * arr = new int[n]{};
+    arr = decompress(parts, arr, n, left, right);
+    // don't forget delete arr if no need in it
+
+    int* new_parts = new int[right-left+1];
+    compress(arr, new_parts, n, left, right);
+    // validate
+    for (int i = 0; i < left-right+1; i++)
+    {
+        if (parts[i] != new_parts[i])
         {
-            nums[index+k] = i;
+            cout << "incorrect: " << i + left << endl; 
         }
-        index += j;
     }
-    cout << endl;
-    int* parts = compress(nums, n);
-    for (int i = 0; i < 18; i++)
-    {
-        cout << parts[i] << endl;
-    }
-    cout << endl;
-    nums = decompress(parts, n);
-    for (int k = 0; k < n; k++) cout << nums[k] << endl;
-    delete nums;
+    delete arr;
+    delete new_parts;
     delete parts;
+    cout << "success" << endl;
+    return 0;
 }
 
 int search(int* arr, int target, int n)
@@ -51,38 +65,36 @@ int search(int* arr, int target, int n)
     else return -1;
 }
 
-int* compress(int* arr, int n)
+void compress(int* arr, int* new_parts, int n, int left, int right)
 {
-    int* parts = new int[18]{};
-    int i = 1;
+    int i = left + 1;
     int pos = 0;
     int temp = 0;
-    while (i <= 17)
+    while (i < right)
     {
         pos = search(arr, i, n);
         int j = i + 1;
-        while (pos == -1)
+        while (pos == -1 && j <= right)
         {
             pos = search(arr, j, n);
             j++;
         }
-        parts[i-1] = pos - temp;
+        new_parts[i-left-1] = pos - temp;
         temp = pos;
         i = j;
     }
-    parts[i-1] = n - pos;
-    return parts;
+     new_parts[i-left-1] = n - pos;
+    return;
 
 }
 
-int* decompress(int* parts, int n)
+int* decompress(int* parts, int* arr,  int n, int left, int right)
 {
     int index = 0;
-    int* arr = new int[n] {};
-    for(int i = 0; i <= 17; i++)
+    for(int i = left; i <= right; i++)
     {
         int j = 0;
-        while (j < parts[i])
+        while (j < parts[i-left])
         {
             arr[index+j] = i;
             j++;
