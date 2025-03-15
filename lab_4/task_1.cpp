@@ -85,7 +85,8 @@ void compress(int* arr, int* new_parts, int n, int left, int right)
     }
      new_parts[i-left-1] = n - pos;
     return;
-
+   // for (0; n-1)
+   // new_parts[arr[i]]++;
 }
 
 int* decompress(int* parts, int* arr,  int n, int left, int right)
@@ -103,3 +104,4 @@ int* decompress(int* parts, int* arr,  int n, int left, int right)
     }
     return arr;
 }
+
