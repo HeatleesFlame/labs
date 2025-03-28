@@ -49,7 +49,6 @@ int main() {
     int kBoardSize;
     cin >> kBoardSize;
     vector<vector<int>> solutions = SolveNQueens(kBoardSize);
-    int solutions_count = 0;
     for (const auto& solution : solutions) {
         cout << "[";
         for (int j = 0; j < kBoardSize; ++j) {
@@ -59,8 +58,7 @@ int main() {
             }
         }
         cout << "]\n";
-        solutions_count++;
     }
-    cout << "total solutions: " << solutions_count << endl;
+    cout << "total solutions: " << solutions.size() << endl;
     return 0;
 }
