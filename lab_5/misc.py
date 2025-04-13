@@ -35,6 +35,7 @@ class OutLongest(OutCommon):
                 root_and_childs = []
         new_data.append(root_and_childs)
         self.data = new_data
+    
     def __eq__(self, other):
         if not isinstance(other, OutCommon):
             return NotImplemented

@@ -21,6 +21,7 @@ class TestRootWord(unittest.TestCase):
             _ = subprocess.run(args=args)
             
             longest_root_res = misc.OutCommon(r"output_longest_root.txt")
+            t_res = misc.OutCommon(r"output_longest_root.txt")
             important_root_res = misc.OutCommon(r"output_cool_root.txt")
             longest_expected = misc.OutLongest(rf"./tests/test_{i}/out_longest_expected.txt")
             important_expected = misc.MostImportant(rf"./tests/test_{i}/out_cool_expected.txt")
