@@ -92,39 +92,7 @@ double** read_lines_eqs(int n, int m){
     return A;
 }
 
-
-int main(int argc, char *argv[]){
-    int m, n; 
-    
-    double** A;
-    int* L = new int[n];
-    double* X = new double[n]{}; 
-
-    for(int i = 0; i < n; i++){L[i] = i;}
-
-    string input_type = argv[1];
-    
-    if (input_type == "matrix")
-    {
-        A = read_mat(n, m);
-    }
-    else if (input_type == "lines")
-    {
-        n = m = 2;
-        A = read_lines_eqs(n, m);
-        print_mat(A, m, n);
-    }
-    else if (input_type == "planes")
-    {   
-        n = m = 3;
-        A = read_lines_eqs(n, m);
-    }
-    // else if (input_type == "triangle")
-    // {
-    //     return 0;
-    // }
-
-
+int triangulate(double** A, int* L,  int m, int n){
     int r = 0;
     for(int i = 0; i < min(m, n); i++) {
         int v = i, u = i;
@@ -167,7 +135,45 @@ int main(int argc, char *argv[]){
             }
         }
         r = i + 1;
+
     }
+    return r;
+}
+
+
+int main(int argc, char *argv[]){
+    int m, n; 
+    
+    double** A;
+    int* L = new int[n];
+    double* X = new double[n]{}; 
+
+    for(int i = 0; i < n; i++){L[i] = i;}
+
+    string input_type = argv[1];
+    
+    if (input_type == "matrix")
+    {
+        A = read_mat(n, m);
+    }
+    else if (input_type == "lines")
+    {
+        n = m = 2;
+        A = read_lines_eqs(n, m);
+        print_mat(A, m, n);
+    }
+    else if (input_type == "planes")
+    {   
+        n = m = 3;
+        A = read_lines_eqs(n, m);
+    }
+    // else if (input_type == "triangle")
+    // {
+    //     return 0;
+    // }
+
+
+    int r = triangulate(A, L, m, n);
 
     bool inconsistent = false;
     for(int i = r; i < m; i++) {
