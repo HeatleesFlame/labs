@@ -48,48 +48,13 @@ double** read_mat(int &n, int &m){
     return A;
 }
 
-
-//correct input is guaranted
-double** read_lines_eqs(int n, int m){
-    string line;
-    getline(cin, line);
-    
-    double** A = init_mat(n, m);
-    
-    int k = 0;
-    int i = 0;
-    int j = 0;
-    string number = "";
-    while (i < m && j <= n){
-        while (k < line.length()){
-            if ((line[k] == 'x' || line[k] == 'y' || line[k] == 'z') && number == ""){
-                A[i][j] = 1;
-                k++;
-                j++;
-            }
-            while (!(line[k] >= '0' && line[k] <= '9')){
-                k++;
-            }
-
-            while (line[k]>= '0' && line[k] <= '9')
-            {
-                number += line[k];
-                k++;
-            }
-            if (number != ""){
-            A[i][j] = stoi(number); 
-            number = "";
-            j++;
-            }
-
-            if (line[k] == ','){
-                ++i;
-                j = 0;
-            }
-            ++k;
-        }
+void copy_mat(double** dest, double** src, int i, int j, int n){
+    for(int k=0;k<n;++k){
+        dest[0][k] = src[i][k];
     }
-    return A;
+    for(int k=0;k<n;++k){
+        dest[1][k] = src[j][k];
+    }
 }
 
 int triangulate(double** A, int* L,  int m, int n){
@@ -140,41 +105,7 @@ int triangulate(double** A, int* L,  int m, int n){
     return r;
 }
 
-
-int main(int argc, char *argv[]){
-    int m, n; 
-    
-    double** A;
-    int* L = new int[n];
-    double* X = new double[n]{}; 
-
-    for(int i = 0; i < n; i++){L[i] = i;}
-
-    string input_type = argv[1];
-    
-    if (input_type == "matrix")
-    {
-        A = read_mat(n, m);
-    }
-    else if (input_type == "lines")
-    {
-        n = m = 2;
-        A = read_lines_eqs(n, m);
-        print_mat(A, m, n);
-    }
-    else if (input_type == "planes")
-    {   
-        n = m = 3;
-        A = read_lines_eqs(n, m);
-    }
-    // else if (input_type == "triangle")
-    // {
-    //     return 0;
-    // }
-
-
-    int r = triangulate(A, L, m, n);
-
+int solve(double** A, double* X, int* L, int m, int n, int r){
     bool inconsistent = false;
     for(int i = r; i < m; i++) {
         if(fabs(A[i][n]) > eps) {
@@ -184,24 +115,27 @@ int main(int argc, char *argv[]){
     }
 
     if(inconsistent) {
-        cout << "No solutions" << endl;
+        return 0;
+        // cout << "No solutions" << endl;
     }
     else if(r == n) {
         for(int j = 0; j < n; j++) {
             X[L[j]] = A[j][n];
         }
-        cout << "single solution:\n";
-        printSolution(X, L, n);
+        return 1;
+        // cout << "single solution:\n";
+        // printSolution(X, L, n);
     }
     else {
-        cout << "Infinity number of solutions" << endl;
-        if (!(input_type=="lines" || input_type=="planes")){
-            cout << "free variables: ";
-            for(int j = r; j < n; j++) {
-                cout << "x" << L[j]+1 << " ";
-            }
-        }
-        cout << endl;
+        return 2;
+        // cout << "Infinity number of solutions" << endl;
+        // if (!(input_type=="lines" || input_type=="planes")){
+        //     cout << "free variables: ";
+        //     for(int j = r; j < n; j++) {
+        //         cout << "x" << L[j]+1 << " ";
+        //     }
+        // }
+        // cout << endl;
 
         for(int j = 0; j < r; j++) {
             X[L[j]] = A[j][n];
@@ -209,18 +143,66 @@ int main(int argc, char *argv[]){
                 X[L[j]] -= A[j][k] * X[L[k]];
             }
         }
-        if (!(input_type=="lines" || input_type=="planes")){
-            cout << "particular solutions (all free vars = 0)\n";
-            printSolution(X, L, n);
+        // if (!(input_type=="lines" || input_type=="planes")){
+        //     cout << "particular solutions (all free vars = 0)\n";
+        //     printSolution(X, L, n);
+        // }
+    }
+
+}
+
+
+int main(int argc, char *argv[]){
+    int m, n; 
+    
+    double** A;
+    string input_type = argv[1];
+        A = read_mat(n, m);
+    if (input_type == "area"){
+  
+        vector<pair<double,  double>> points {};
+
+        for(int i = 0; i < m-1; ++i){
+            for(int j=i+1; j <m; ++j){
+                double** tmp_mat = init_mat(3, 2);
+                int* L = new int[n];
+                for(int i = 0; i < n; i++){L[i] = i;}
+                double* X = new double[n]{};
+                copy_mat(tmp_mat, A, i, j, 3);
+                int r = triangulate(tmp_mat, L, m, n);
+                int flag = solve(tmp_mat, X, L, 2, 3, r);
+                if (flag != 1){
+                    cout << "Degenerate behind the screen" << endl;
+                    return 0;
+                }
+                points.push_back(pair(X[L[0]], X[L[1]]));
+            }
+        // S=1/2[(x1-x3)(y2-y3)-(x2-x3)(y2-y3)] 
+        double S = 0.5 * fabs((
+            (points[1].second - points[2].second)*((points[0].first - points[2].first)
+            -(points[1].first - points[2].first))
+        ));
+        cout << S << endl;
         }
     }
+    else
+    {
+        int* L = new int[n];
+        double* X = new double[n]{}; 
 
-    for(int i = 0; i < m; i++) {
-        delete[] A[i];
+        for(int i = 0; i < n; i++){L[i] = i;}
+
+        int r = triangulate(A, L, m, n);
+        solve(A, X, L, m, n, r);
+        //print
+        for(int i = 0; i < m; i++) {
+            delete[] A[i];
+        }
+        delete[] A;
+        delete[] L;
+        delete[] X;
+    
+        return 0;
     }
-    delete[] A;
-    delete[] L;
-    delete[] X;
 
-    return 0;
-}
+    }
