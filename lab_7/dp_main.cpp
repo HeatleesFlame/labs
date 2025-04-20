@@ -127,7 +127,6 @@ int solve(double** A, double* X, int* L, int m, int n, int r){
         // printSolution(X, L, n);
     }
     else {
-        return 2;
         // cout << "Infinity number of solutions" << endl;
         // if (!(input_type=="lines" || input_type=="planes")){
         //     cout << "free variables: ";
@@ -143,6 +142,7 @@ int solve(double** A, double* X, int* L, int m, int n, int r){
                 X[L[j]] -= A[j][k] * X[L[k]];
             }
         }
+        return 2;
         // if (!(input_type=="lines" || input_type=="planes")){
         //     cout << "particular solutions (all free vars = 0)\n";
         //     printSolution(X, L, n);
@@ -158,32 +158,38 @@ int main(int argc, char *argv[]){
     double** A;
     string input_type = argv[1];
         A = read_mat(n, m);
+    
     if (input_type == "area"){
   
         vector<pair<double,  double>> points {};
 
         for(int i = 0; i < m-1; ++i){
             for(int j=i+1; j <m; ++j){
-                double** tmp_mat = init_mat(3, 2);
+                double** tmp_mat = init_mat(2, 2);
                 int* L = new int[n];
                 for(int i = 0; i < n; i++){L[i] = i;}
                 double* X = new double[n]{};
                 copy_mat(tmp_mat, A, i, j, 3);
-                int r = triangulate(tmp_mat, L, m, n);
-                int flag = solve(tmp_mat, X, L, 2, 3, r);
+                print_mat(tmp_mat, 2, 2);
+                cout << endl;
+                int r = triangulate(tmp_mat, L, 2, 2);
+                print_mat(tmp_mat, 2, 2);
+                cout << endl;
+                int flag = solve(tmp_mat, X, L, 2, 2, r);
                 if (flag != 1){
                     cout << "Degenerate behind the screen" << endl;
                     return 0;
                 }
-                points.push_back(pair(X[L[0]], X[L[1]]));
+                points.push_back(pair(X[0], X[1]));
             }
+        }
         // S=1/2[(x1-x3)(y2-y3)-(x2-x3)(y2-y3)] 
         double S = 0.5 * fabs((
-            (points[1].second - points[2].second)*((points[0].first - points[2].first)
-            -(points[1].first - points[2].first))
+            (points[1].first - points[0].first)*(points[2].second - points[0].second)
+            -(points[2].first - points[0].first)*(points[1].second - points[0].second)
         ));
         cout << S << endl;
-        }
+        return 0;
     }
     else
     {
@@ -193,8 +199,29 @@ int main(int argc, char *argv[]){
         for(int i = 0; i < n; i++){L[i] = i;}
 
         int r = triangulate(A, L, m, n);
-        solve(A, X, L, m, n, r);
-        //print
+        int flag = solve(A, X, L, m, n, r);
+        if (flag == 0){
+            cout << "No solutions" << endl;
+            return 0;
+        }
+        if (flag == 1){
+            printSolution(X, L, n);
+        }
+        if (flag == 2 ){
+            cout << "Infinity number of solutions" << endl;
+        if (!(input_type=="lines" || input_type=="planes")){
+            cout << "free variables: ";
+            for(int j = r; j < n; j++) {
+                cout << "x" << L[j]+1 << " ";
+            }
+            if (!(input_type=="lines" || input_type=="planes")){
+            cout << "particular solutions (all free vars = 0)\n";
+            printSolution(X, L, n);
+        }
+        }
+
+        cout << endl;
+        }
         for(int i = 0; i < m; i++) {
             delete[] A[i];
         }
