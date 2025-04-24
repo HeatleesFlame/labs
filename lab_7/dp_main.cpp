@@ -170,17 +170,17 @@ int main(int argc, char *argv[]){
                 for(int i = 0; i < n; i++){L[i] = i;}
                 double* X = new double[n]{};
                 copy_mat(tmp_mat, A, i, j, 3);
-                print_mat(tmp_mat, 2, 2);
+                // print_mat(tmp_mat, 2, 2);
                 cout << endl;
                 int r = triangulate(tmp_mat, L, 2, 2);
-                print_mat(tmp_mat, 2, 2);
+                // print_mat(tmp_mat, 2, 2);
                 cout << endl;
                 int flag = solve(tmp_mat, X, L, 2, 2, r);
                 if (flag != 1){
                     cout << "Degenerate behind the screen" << endl;
                     return 0;
                 }
-                points.push_back(pair(X[0], X[1]));
+                points.push_back(pair(X[0], X[1]));  // noqa
             }
         }
         // S=1/2[(x1-x3)(y2-y3)-(x2-x3)(y2-y3)] 
