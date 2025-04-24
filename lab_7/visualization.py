@@ -2,32 +2,24 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def plot_lines(coeff_matrix):
-    """
-    Строит графики прямых, заданных матрицей коэффициентов в форме Ax + By + C = 0.
 
-    Параметры:
-    coeff_matrix (list of list): Матрица коэффициентов, где каждая строка [A, B, C] 
-                                 соответствует уравнению прямой.
-    """
     plt.figure(figsize=(8, 6))
-    x = np.linspace(-10, 10, 400)  # Диапазон значений x
+    x = np.linspace(-10, 10, 400)
 
     for i, (A, B, C) in enumerate(coeff_matrix):
-        # Пропускаем некорректные уравнения (A и B оба нули)
         if A == 0 and B == 0:
             print(f"Пропуск строки {i}: недопустимые коэффициенты A=0 и B=0.")
             continue
 
         label = f"{A}x + {B}y + {C} = 0"
 
-        # Вертикальная прямая (B = 0)
         if B == 0:
             x_val = -C / A if A != 0 else 0
             plt.axvline(x=x_val, label=label, linestyle='--')
         
-        # Горизонтальная или наклонная прямая
+
         else:
-            y = (-A/B) * x + (-C/B)
+            y = (-A/B) * x + (C/B)
             plt.plot(x, y, label=label)
 
     plt.title('Графики прямых')
@@ -40,12 +32,11 @@ def plot_lines(coeff_matrix):
     plt.show()
 
 if __name__ == "__main__":
-    m, n = list(
-        map(int, input().split(' '))
-    )
-    coeff_matrix = []
-    for i in range(m):
-        coeff_matrix.append(
-            list(map(int, input().split(" "))
-            ))
+    with open(r"C:\Users\D\Documents\tsu\C++\labs\lab_7\buff.txt", 'r') as f:
+        # l = f.readline()
+        # m, n = list(map(int, l.split(' ')[:-1]))
+        coeff_matrix = []
+        for line in f:
+            coeff_matrix.append(list(map(int, line[:-2].split(" "))))
     plot_lines(coeff_matrix=coeff_matrix)
+

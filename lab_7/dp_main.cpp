@@ -1,8 +1,10 @@
 #include <iostream>
+#include <fstream>
+#include <vector>
 #include <cmath>
 #include <algorithm>
 #include <string>
-#include <regex>
+
 
 using namespace std;
 
@@ -14,6 +16,17 @@ void printSolution(double* X, int* L, int n) {
         cout << X[i] << " ";
     }
     cout << endl;
+}
+
+void buff_push_mat(double** A, int m, int n) {
+    ofstream outfile("buff.txt");
+    for (int i = 0; i < m; ++i) {
+        for (int j = 0; j <= n; ++j) { 
+            outfile << A[i][j] << " ";
+        }
+        outfile << endl;
+    }
+    outfile.close();
 }
 
 double** init_mat(int n, int m){
@@ -109,6 +122,7 @@ int solve(double** A, double* X, int* L, int m, int n, int r){
     bool inconsistent = false;
     for(int i = r; i < m; i++) {
         if(fabs(A[i][n]) > eps) {
+            // r(A') == r(A)
             inconsistent = true;
             break;
         }
@@ -157,11 +171,16 @@ int main(int argc, char *argv[]){
     
     double** A;
     string input_type = argv[1];
-        A = read_mat(n, m);
+    A = read_mat(n, m);
+    if (input_type == "lines"){
+        buff_push_mat(A, m, n);
+        system("python visualization.py");
+    }
     
     if (input_type == "area"){
-  
-        vector<pair<double,  double>> points {};
+        buff_push_mat(A, m, n);
+        system("python visualization.py");
+        vector<pair<double, double>> points {};
 
         for(int i = 0; i < m-1; ++i){
             for(int j=i+1; j <m; ++j){
@@ -169,6 +188,7 @@ int main(int argc, char *argv[]){
                 int* L = new int[n];
                 for(int i = 0; i < n; i++){L[i] = i;}
                 double* X = new double[n]{};
+
                 copy_mat(tmp_mat, A, i, j, 3);
                 // print_mat(tmp_mat, 2, 2);
                 cout << endl;
@@ -199,6 +219,7 @@ int main(int argc, char *argv[]){
         for(int i = 0; i < n; i++){L[i] = i;}
 
         int r = triangulate(A, L, m, n);
+        print_mat(A, m, n);
         int flag = solve(A, X, L, m, n, r);
         if (flag == 0){
             cout << "No solutions" << endl;
@@ -214,11 +235,12 @@ int main(int argc, char *argv[]){
             for(int j = r; j < n; j++) {
                 cout << "x" << L[j]+1 << " ";
             }
-            if (!(input_type=="lines" || input_type=="planes")){
+        if (!(input_type=="lines" || input_type=="planes")){
             cout << "particular solutions (all free vars = 0)\n";
             printSolution(X, L, n);
         }
         }
+        else
 
         cout << endl;
         }
