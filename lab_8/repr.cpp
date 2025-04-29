@@ -123,11 +123,18 @@ int adj_list_to_edge_seq(void){
     while (!fin.eof()){
         getline(fin, line);
         if (line == "") break;
-        auto digits_begin = sregex_iterator(line.begin(), line.end(), number_pattern);
+
+        auto digits_begin = sregex_iterator(
+            line.begin(),
+            line.end(),
+            number_pattern
+        );
+
         sregex_iterator i = digits_begin;
         auto digits_end = sregex_iterator();
         int vertex = stoi((*i).str());
         ++i;
+
         while (i != digits_end){
             smatch match = *i;
             string tmp = match.str();
@@ -138,9 +145,7 @@ int adj_list_to_edge_seq(void){
         ++i;
         }
         last = vertex;
-        
     }
-
     return 0;
 }
 int main(void){
