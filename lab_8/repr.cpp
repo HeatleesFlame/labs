@@ -12,6 +12,7 @@ double** init_mat(int n){
     return A;
 }
 
+// 
 double** read_adj_mat(int &vertex_num){
     ifstream fin;
     fin.open("./input.txt");
@@ -53,104 +54,103 @@ int read_and_write_graph_by_edges(){
 }
 
 
-struct Node{
-    int data;
-    Node* next;
-};
-
-Node** read_adj_list(int vertex_num) {
-    ifstream fin("output_adj_mat.txt");
-    if (!fin.is_open()) {
-        cerr << "File not found!";
-        return nullptr;
-    }
-
-
-    Node** adj_list = new Node*[vertex_num]();
-
-    for (int i = 0; i < vertex_num; ++i) {
-        Node* cur = adj_list[i];
-        for (int j = 0; j < vertex_num; ++j) {
-            int is_adj;
-            fin >> is_adj;
-            if (is_adj) {
-                Node* newNode = new Node{j, nullptr};
-                if (cur == nullptr) {
-                    adj_list[i] = newNode;
-                } else {
-                    cur->next = newNode;
-                }
-                cur = newNode;
+void build_incidence_lists(int vertex_num){
+    
+    ifstream fin;
+    fin.open("./output_adj_mat.txt");
+    
+    int* vertexes = new int[vertex_num]{};
+    int* edges_sublist_len = new int[vertex_num]{};
+    int edges_num = 0;
+    for (int i = 0; i < vertex_num; ++i){
+        int num_incident_edges = 0;
+        for(int j = 0; j < vertex_num; ++j){
+            int edge_exists;
+            fin >> edge_exists;
+            if (edge_exists == 1){
+                edges_num++;
+                num_incident_edges++;
+            }
+            edges_sublist_len[i] = num_incident_edges;
+            if (i > 0){
+                vertexes[i] = vertexes[i-1] + edges_sublist_len[i];
             }
         }
     }
     fin.close();
-    return adj_list;
-}
-
-void write_adj_list(Node** adj_list, int vertex_num){
-    ofstream fout;
-    fout.open("output_adj_list.txy");
-    for (int i = 0; i < vertex_num; ++i) {
-        fout << i << ": ";
-        Node* cur = adj_list[i];
-        while (cur != nullptr) {
-            fout << cur->data << " ";
-            cur = cur->next;
-        }
-        fout << endl;
-    }
-}
-
-//task 1B
-void read_and_write_adj_list(int vertex_num){
-    Node** adj_list;
-    adj_list = read_adj_list(vertex_num);
-    write_adj_list(adj_list, vertex_num);
-    return;
-}
-
-//task 1C
-regex number_pattern("[0-9]+");
-
-int adj_list_to_edge_seq(void){
-    ifstream fin;
-    fin.open("output_adj_list.txy");
-    ofstream fout;
-    fout.open("edge_seq.txt");
-    string line;
-    int last = -1;
-    while (!fin.eof()){
-        getline(fin, line);
-        if (line == "") break;
-
-        auto digits_begin = sregex_iterator(
-            line.begin(),
-            line.end(),
-            number_pattern
-        );
-
-        sregex_iterator i = digits_begin;
-        auto digits_end = sregex_iterator();
-        int vertex = stoi((*i).str());
-        ++i;
-
-        while (i != digits_end){
-            smatch match = *i;
-            string tmp = match.str();
-            int digit = stoi(tmp);
-            if (digit > last){
-                fout<< vertex << " " << digit << endl;
+    // debug step 1
+    // for(int i = 0; i < vertex_num; ++i){
+    //     cout << vertexes[i] << " " << edges_sublist_len[i] << endl;  
+    // }
+    fin.open("output_adj_mat.txt");
+    int* incident_edges = new int[edges_num];
+    int k = 0;
+    for (int i = 0; i < vertex_num; ++i){
+        for (int j = 0; j < vertex_num; ++j){
+            int edge_exists;
+            fin >> edge_exists;
+            if (edge_exists == 1){
+                incident_edges[k] = j;
+                ++k;
             }
-        ++i;
         }
-        last = vertex;
     }
+    fin.close();
+
+    ofstream fout;
+    fout.open("output_adj_list.txt");
+    fout << edges_num << " " << vertex_num << endl;
+
+    for(int i = 0; i < edges_num; ++i){
+        fout << incident_edges[i] << " ";
+    }
+    fout << endl;
+    for (int i = 0; i < vertex_num; ++i){
+        fout << vertexes[i] << " ";
+    }
+    fout << endl;
+    for (int i = 0; i < vertex_num; ++i){
+        fout << edges_sublist_len[i] << " ";
+    }
+}
+
+int print_edge_seq(void){
+    ifstream fin;
+    fin.open("output_adj_list.txt");
+    int edges;
+    fin >> edges;
+    int vertexes;
+    fin >> vertexes;
+    int* D = new int[edges];
+    for(int i=0; i<edges; ++i){
+        fin >> D[i];
+    }
+    int* S = new int[vertexes];
+    for(int i=0; i<vertexes; ++i){
+        fin >> S[i];
+    }
+    int* L = new int[vertexes];
+    for(int i=0; i<vertexes; ++i){
+        fin >> L[i];
+    }
+    fin.close();
+
+    ofstream fout;
+    fout.open("output_edges_list.txt");
+    for(int i = 0; i < vertexes; ++i){
+        for(int j = S[i]; j < S[i]+  L[i]; ++j){
+            if (D[j] > i){
+                fout << i << " " << D[j] << endl;
+            }    
+        }
+    }
+
     return 0;
 }
+
 int main(void){
     int vertex_num = read_and_write_graph_by_edges();
-    read_and_write_adj_list(vertex_num);
-    adj_list_to_edge_seq();
+    build_incidence_lists(vertex_num);
+    print_edge_seq();
     return 0;
 }
