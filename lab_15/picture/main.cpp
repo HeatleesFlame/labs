@@ -221,7 +221,7 @@ int main(int argc, char *argv[])
     // редактирование
     color_amp(rgbInfo, 2, 'R', fileInfoHeader.biWidth, fileInfoHeader.biHeight, 1.5);
 
-    // запись в файл
+    // запись в фай
     std::ofstream output;
     output.open("res.bmp", std::ios::binary);
     
